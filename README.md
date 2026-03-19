@@ -9,12 +9,8 @@ My attempt at the classic five stage pipelined **ARMv7** core implemented in VHD
 - **ARMv7 base instruction support** — data processing, load/store, and branch instructions
 
 ### Architecture Overview
-          ┌──────┐   ┌──────┐   ┌──────┐   ┌──────┐   ┌──────┐
-  PC ───► │  IF  │──►│  ID  │──►│  EX  │──►│ MEM  │──►│  WB  │
-          └──────┘   └──────┘   └──────┘   └──────┘   └──────┘
-                        ▲           │           │
-                        │           └─── FWD ───┘   (Forwarding Unit)
-                        └────────────── HDU ──────── (Hazard Detection Unit)
+<img width="549" height="129" alt="image" src="https://github.com/user-attachments/assets/b5647b79-bbad-439b-91bc-8968abc8cd66" />
+
 
 ### Pipeline Stages
 **IF** - Instruction fetch; PC update and branch target mux
