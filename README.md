@@ -7,6 +7,7 @@ My attempt at the classic five stage pipelined **ARMv7** core implemented in VHD
 - **Load-use hazard detection** — automatic stall insertion with NOP bubble injection
 - **Control hazard handling** — pipeline flush on taken branches with flush signal propagation across all pipeline registers
 - **ARMv7 base instruction support** — data processing, load/store, and branch instructions
+- **L1 Cache has been implemennted** — more on it below
 
 ### Architecture Overview
 <img width="549" height="129" alt="image" src="https://github.com/user-attachments/assets/b5647b79-bbad-439b-91bc-8968abc8cd66" />
@@ -30,6 +31,21 @@ Data hazards resolved via forwarding from EX/MEM and MEM/WB registers back to EX
 Load-use hazards (unavoidable 1-cycle penalty) handled by freezing IF/ID and ID/EX registers and injecting a NOP bubble into EX
 Control hazards resolved by flushing IF/ID, ID/EX, and EX/MEM registers on a taken branch; branch resolution occurs in the EX stage
 
+### L1 Cache
+**Type**  - 4 way SA
+**Sets** - 4
+**Ways** - 4
+**Line Size** - 1 word (32 bits)
+**Total Cap** - 64 bytes
+**Replacement Policy** - Pseudo-LRU (round-robin counter)
+**Write Policy** - Write-back
+**Write Miss** - Write-allocate
+**Miss Penalty** - idealized single cycle
+**Tag** - 28 bits
+**Index** - 2 bits
+**Offset** - 2 bits
+**Dirty Eviction** - Combinational Writeback to backing dmem
+
 ### Datapath
 <img width="1029" height="603" alt="image" src="https://github.com/user-attachments/assets/358718f6-8f59-478f-b003-4e4a05a8fa6a" />
 **Datapath without hazards**
@@ -40,13 +56,5 @@ Control hazards resolved by flushing IF/ID, ID/EX, and EX/MEM registers on a tak
 I used a lot of class material from Microprocessors and Computer Architectures to make my CPU and I couldn't find a clean picture of the whole datapath without highlighting the Hazard so I just included both, lol.
 
 ### Synthesis Results
-**Clock Frequency** - 100Mhz
-**WNS** - +1.529
-**WHS** - +0.081
-**Total Power** - 0.141W (Around 93% was static power since it's all in Vivado for FPGA synthesis so it's really just leakage)
-**LUTs** - 628
-**FF** - 321
-**No timing violations/failed routes ☺️**
+Will update after more stuff is added
 
-### Future Contribution
-I'm still really excited for this project and my next steps are adding branch prediction and integrating an L1 cache. Beyond that, I want to dive into the realm of tapeouts with Sky130. I also am adding more instruction set, multiply (wallace trees), barrel shifter, so on.
