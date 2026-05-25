@@ -60,6 +60,13 @@ architecture Behavioral of datapath is
     signal flush : std_logic;
     signal stall : std_logic;
 
+    signal cache_rdata  : std_logic_vector(31 downto 0);
+    signal cache_hit    : std_logic;
+    signal mem_addr_s   : std_logic_vector(31 downto 0);
+    signal mem_wdata_s  : std_logic_vector(31 downto 0);
+    signal mem_we_s     : std_logic;
+    signal mem_rdata_s  : std_logic_vector(31 downto 0);
+
     type dmem_t is array (0 to 255) of std_logic_vector(31 downto 0);
     signal dmem : dmem_t := (others => (others => '0'));
 
@@ -76,6 +83,19 @@ architecture Behavioral of datapath is
         reg1_out : out std_logic_vector(31 downto 0);
         reg2_out : out std_logic_vector(31 downto 0);
         reg3_out : out std_logic_vector(31 downto 0));
+    end component;
+
+    component dcache port(
+        clk       : in  std_logic;
+        addr      : in  std_logic_vector(31 downto 0);
+        wdata     : in  std_logic_vector(31 downto 0);
+        we        : in  std_logic;
+        rdata     : out std_logic_vector(31 downto 0);
+        hit       : out std_logic;
+        mem_addr  : out std_logic_vector(31 downto 0);
+        mem_wdata : out std_logic_vector(31 downto 0);
+        mem_we    : out std_logic;
+        mem_rdata : in  std_logic_vector(31 downto 0));
     end component;
 
     component ALU port(
@@ -286,16 +306,30 @@ begin
     aluflags <= aluflagsm;
     flagwm   <= flagwm_s;
 
+    dc : dcache port map(
+        clk       => clk,
+        addr      => aluresultm,
+        wdata     => rd2m,
+        we        => memwritem,
+        rdata     => cache_rdata,
+        hit       => cache_hit,
+        mem_addr  => mem_addr_s,
+        mem_wdata => mem_wdata_s,
+        mem_we    => mem_we_s,
+        mem_rdata => mem_rdata_s);
+    
     -- MEMORY
     process(clk)
     begin
         if rising_edge(clk) then
-            if memwritem = '1' then
-                dmem(to_integer(unsigned(aluresultm(9 downto 2)))) <= rd2m;
+            if mem_we_s = '1' then
+                dmem(to_integer(unsigned(mem_addr_s(9 downto 2)))) <= mem_wdata_s;
             end if;
         end if;
     end process;
-    readdata <= dmem(to_integer(unsigned(aluresultm(9 downto 2))));
+    mem_rdata_s <= dmem(to_integer(unsigned(mem_addr_s(9 downto 2))));
+
+    readdata <= cache_rdata;
 
     -- M/W PIPELINE REGISTER
     process(clk)
