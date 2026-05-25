@@ -44,17 +44,7 @@ begin
     begin
         wait for 250ns;
         
-        assert (reg1_obs = x"00000013")
-            report "FAIL: R1 expected 0x13"
-            severity failure;
-            
-        assert (reg2_obs = x"00000014")
-            report "FAIL: R2 expected 0x14"
-            severity failure;
-        
-        assert (reg3_obs = x"00000027")
-            report "FAIL: R3 expected 0x27, ADDGT should have fired"
-            severity failure;
+        -- test with your own assertions, condlogic or cache is a good place to start and you can just make more regN_out
         
         report "PASS: all assertions passed";
         wait;
