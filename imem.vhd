@@ -35,14 +35,7 @@ architecture Behavioral of imem is
     end function;
 
     signal mem : imem_t := (
-        0  => x"E2801013",  -- ADD R1, R0, #19
-        1  => x"E2802014",  -- ADD R2, R0, #20
-        2  => x"E1520001",  -- CMP R2, R1
-        3 => x"00813002",  -- ADDEQ R3, R1, R2
-        4 => x"90813002",  -- ADDLS R3, R1, R2
-        5 => x"C0813002",  -- ADDGT R3, R1, R2
-        6 => x"80813002",  -- ADDHI R3, R1, R2
-        7 => x"E5804004",  -- STR R4, [R0, #4]
+        -- whatever you want to use lol
         others => x"E320F000");
 begin
     rd <= mem(to_integer(unsigned(addr(9 downto 2))));
